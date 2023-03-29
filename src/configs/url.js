@@ -1,0 +1,25 @@
+export const API_URLS = {
+  LOGIN: 'home/user_login',
+  GET_VEHICLES: 'home/get_vehicles',
+  GET_MATERIALS: 'home/get_materials',
+  GET_COMPANIES: 'home/get_companies',
+  GET_DRIVERS: 'home/get_drivers',
+  GET_STATIONS: 'home/get_stations',
+  Save_GR: 'home/save_gr',
+  SAVE_EMPTY_EXPENSE: 'home/save_emptyexpense',
+  SAVE_GR_BASED_EXPENSE: 'home/save_grbasedexpense',
+  SAVE_PRIZE_FOR_ROUTES: 'home/save_prizeforroutesexpense',
+  SAVE_PETTY_EXPENSE: 'home/save_pettyexpense',
+  SAVE_VEHICLE_EXPENSE: 'home/save_vehicleexpense',
+  GET_GR: 'home/get_grcode',
+  GET_VEHICLE_DETAIL: 'home/get_vehicledetail',
+  GET_SOURCE_STATION_BY_BILL: 'home/get_sourcestationbybillcompanyid',
+  GET_DES_STATION_BY_BILL: 'home/get_destinationstationbybillcompanyid',
+  GET_EXPENSE_DETAIL: 'home/get_expenselistbyuserid',
+  APPROVE_GR: 'home/approvegr',
+  DELETE_GR: 'home/deletegr',
+  USER_NOTI: 'home/usernotifications',
+
+
+  RESET_PASSWORD: 'user/changePassword',
+}
