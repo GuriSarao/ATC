@@ -80,8 +80,10 @@ const Dashboard = ({ navigation, route }) => {
 
     const [Status_Value, setStatus_Value] = useState('');
     const [Status_Items, setStatus_Items] = useState([
+        { label: 'Incomplete', value: '0' },
         { label: 'Open', value: '1' },
-        { label: 'Closed', value: '3' },
+        { label: 'Closed', value: '2' },
+
     ]);
 
     useEffect(() => {
@@ -111,8 +113,9 @@ const Dashboard = ({ navigation, route }) => {
             label: item?.name
         }));
         setDriver_Items(Drivers_List)
-        setDeatils({ ...Details, Grcode: GR_Code?.grcode })
+        // setDeatils({ ...Details, Grcode: GR_Code?.grcode })
     }
+
 
     const [Buttonvalue, setButtonValue] = React.useState('0');
     const [checked, setChecked] = React.useState(false);
@@ -193,10 +196,10 @@ const Dashboard = ({ navigation, route }) => {
             })
     }
 
+
     const _Save = () => {
         const data = {
-            // Typevalue,
-            GRCode: Details?.Grcode?.toString() || "1",
+            GRCode: Details.Grcode ? Details?.Grcode?.toString() : GR_Code.grcode.toString(),
             startDate: Data[0]?.value,
             endDate: Data[1]?.value,
             expectedEndDate: Data[2]?.value,
@@ -213,7 +216,7 @@ const Dashboard = ({ navigation, route }) => {
             is_special_rate: '0',
             distance: Details.Distance || "0",
             employeeId: Driver_Value,
-            status: Status_Value || "1",
+            status: Status_Value || "2",
             notes: Details.Notes,
         }
         if (!Vehicle_value) {
@@ -270,25 +273,13 @@ const Dashboard = ({ navigation, route }) => {
             });
             return
         }
-        // if (!Status_Value) {
-        //     Snackbar.show({
-        //         text: 'Please Select Status',
-        //     });
-        //     return
-        // }
-        // if (!Details.total) {
-        //     Snackbar.show({
-        //         text: 'Please Enter Total',
-        //     });
-        //     return
-        // }
-
         dispatch(Save_GR(data)).then((res) => {
             showFlashMessage(res.message),
-                navigation.navigate('GRBasedExpense', Vehicle_value)
-            // console.log(res, 'res')
+                navigation.navigate('GRBasedExpense', {
+                    Vehicle: Vehicle_value,
+                    Gr: Details.Grcode ? Details?.Grcode?.toString() : GR_Code.grcode.toString()
+                })
         })
-
     }
 
 
@@ -311,7 +302,7 @@ const Dashboard = ({ navigation, route }) => {
                     nestedScrollEnabled={true}
                 >
                     <View style={[styles.container]}>
-                        <Text style={[styles.label, styles.text]} >GR Bill Type</Text>
+                        {/* <Text style={[styles.label, styles.text]} >GR Bill Type</Text>
                         <CustomDropDown
                             value={Typevalue}
                             setValue={setTypeValue}
@@ -323,14 +314,14 @@ const Dashboard = ({ navigation, route }) => {
                                 setDropDownHeight(height)
                             }}
                             zIndex={8000}
-                        />
+                        /> */}
                         <Input
                             containerStyle={[styles.dropDown, { marginTop: scaleSize(23) }]}
                             inputContainerStyle={[styles.input, { height: DropDownHeight }]}
                             textStyle={{ fontSize: 17, }}
                             label={'GR Code'}
                             labelStyle={[styles.label]}
-                            placeholder={'Enter GR Code'}
+                            placeholder={'GR Code (optional)'}
                             defaultValue={Details.Grcode?.toString()}
                             onChangeText={(t) => setDeatils({ ...Details, Grcode: t })}
                         />

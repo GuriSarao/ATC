@@ -26,8 +26,6 @@ const Notifications = () => {
         })
     }
 
-    console.log(Noti, 'noti')
-
     const renderItem = ({ item }) => {
         return (
             <View style={styles.list}>

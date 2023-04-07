@@ -16,7 +16,7 @@ import DatePicker from '../Dashboard/DatePicker';
 import moment from 'moment'
 import Button from '../../components/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { Save_Empty_Expense, Save_GR_Based, Save_Petty_Expense, Save_Prize_for_routes, Save_Vehicle_Expense } from '../../redux/actions/users.actions';
+import { Update_Empty_Expense, Update_GR_Based, Update_Petty_Expense, Update_Prize_for_routes, Update_Vehicle_Expense } from '../../redux/actions/users.actions';
 import { showMessage } from 'react-native-flash-message';
 import Loader from '../../components/Loader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -36,11 +36,55 @@ const Init = [
         visible: false,
     }]
 
-const ExpenseTypes = ({ navigation, route }) => {
+const Edit_Expense = ({ navigation, route }) => {
     const item = route?.params
     const dispatch = useDispatch()
     const { vehicles_detail, Companies, isRequesting, Stations } = useSelector(state => state?.users) || []
     const [Details, setDeatils] = useState({ Amount: '', CardNum: '', Notes: '', GR: '' })
+
+    console.log(item, 'item in edit')
+
+
+    useEffect(() => {
+        setVehicle_Value(item?.vehicleId)
+        setPayment_Value(item?.payment_mode_id)
+        setPaidOnValue(moment(item?.paidOn).format('DD-MM-YYYY'))
+        setDeatils({
+            ...Details,
+            Amount: item?.amountPaid,
+            CardNum: item?.card_number,
+            Notes: item?.notes,
+            GR: item?.GRCode
+        })
+        setSource_Value(item?.source_station_id)
+        setDes_Value(item?.destination_station_id)
+        handle_Start()
+        handle_End()
+    }, [])
+
+    const handle_Start = (data, index) => {
+        let temp = [...Data];
+        temp[0].value = moment(item.expence_from_date).format('DD-MM-YYYY');
+        temp[0].visible = false;
+        SetData(temp);
+    };
+
+    const handle_End = (data, index) => {
+        let temp = [...Data];
+        temp[1].value = moment(item.expence_to_date).format('DD-MM-YYYY');
+        temp[1].visible = false;
+        SetData(temp);
+    };
+
+    function Type_of_expense() {
+        return item?.type_of_expence === '1' ? "GR Based Expense"
+            : item?.type_of_expence === '2' ? 'Petty Expence'
+                : item?.type_of_expence === '3' ? 'Empty Expence'
+                    : item?.type_of_expence === '4' ? 'Prize For Routes'
+                        : item?.type_of_expence === '5' ? 'Vehicle Extra Expense'
+                            : null;
+    }
+
 
     const [Vehicle_value, setVehicle_Value] = useState('');
     const [Vehicle_items, setVehicle_Items] = useState([]);
@@ -130,6 +174,7 @@ const ExpenseTypes = ({ navigation, route }) => {
             card_number: Details.CardNum,
             paidOn: PaidOnValue.toString(),
             notes: Details.Notes,
+            expense_id: item?.id
         }
         const GR_Based_data = {
             user_id: user_Detail[0]?.id,
@@ -140,6 +185,7 @@ const ExpenseTypes = ({ navigation, route }) => {
             card_number: Details.CardNum,
             paidOn: PaidOnValue.toString(),
             notes: Details.Notes,
+            expense_id: item?.id
         }
         const Petty_Data = {
             ...data,
@@ -154,40 +200,41 @@ const ExpenseTypes = ({ navigation, route }) => {
             card_number: Details.CardNum,
             paidOn: PaidOnValue.toString(),
             notes: Details.Notes,
+            expense_id: item?.id
         }
 
         if (!Vehicle_value) {
             showFlashMessage('Please Select Vehicle')
             return
         }
-        if (item.title === 'Empty Expense') {
-            return (Empty_Expense(data))
+        if (item?.type_of_expence === '3') {
+            return (_Update_Empty_Expense(data))
         }
-        if (item.title === 'GR Based Expense')
-            return (GR_Based(GR_Based_data))
+        if (item?.type_of_expence === '1')
+            return (_Update_GR_Based(GR_Based_data))
 
-        if (item.title === 'Prize For Routes')
+        if (item?.type_of_expence === '4')
             return (Price_Based(GR_Based_data))
 
-        if (item.title === 'Petty Expense')
+        if (item?.type_of_expence === '2')
             return (Petty_Expense(Petty_Data))
 
-        if (item.title === 'Vehicle Extra Expense')
+        if (item?.type_of_expence === '5')
             return (Vehicle_Expense(Vehicle_Data))
     }
 
-    const Empty_Expense = (data) => {
-        dispatch(Save_Empty_Expense(data)).then((res) => {
-            console.log(res, 'res empty expense')
+    const _Update_Empty_Expense = (data) => {
+        dispatch(Update_Empty_Expense(data)).then((res) => {
+            console.log(res, 'res update  empty expense')
             showFlashMessage(res.message)
             navigation.dispatch(StackActions.popToTop());
         })
     }
 
-    const GR_Based = (data) => {
+    const _Update_GR_Based = (data) => {
         return (
-            dispatch(Save_GR_Based(data)).then((res) => {
-                console.log(res, 'res gr based')
+            dispatch(Update_GR_Based(data)).then((res) => {
+                console.log(res, 'res update gr based')
                 showFlashMessage(res.message)
                 navigation.dispatch(StackActions.popToTop());
             })
@@ -196,7 +243,7 @@ const ExpenseTypes = ({ navigation, route }) => {
 
     const Price_Based = (data) => {
         return (
-            dispatch(Save_Prize_for_routes(data)).then((res) => {
+            dispatch(Update_Prize_for_routes(data)).then((res) => {
                 console.log(res, 'res price based')
                 showFlashMessage(res.message)
                 navigation.dispatch(StackActions.popToTop());
@@ -206,7 +253,7 @@ const ExpenseTypes = ({ navigation, route }) => {
 
     const Petty_Expense = (data) => {
         return (
-            dispatch(Save_Petty_Expense(data)).then((res) => {
+            dispatch(Update_Petty_Expense(data)).then((res) => {
                 console.log(res, 'res petty based')
                 showFlashMessage(res.message)
                 navigation.dispatch(StackActions.popToTop());
@@ -216,7 +263,7 @@ const ExpenseTypes = ({ navigation, route }) => {
 
     const Vehicle_Expense = (data) => {
         return (
-            dispatch(Save_Vehicle_Expense(data)).then((res) => {
+            dispatch(Update_Vehicle_Expense(data)).then((res) => {
                 console.log(res, 'res Vehicle based')
                 showFlashMessage(res.message)
                 navigation.dispatch(StackActions.popToTop());
@@ -231,8 +278,10 @@ const ExpenseTypes = ({ navigation, route }) => {
             <SafeAreaView style={styles.safearea}   >
                 <Loader isLoading={isRequesting} />
                 <Appbar.Header mode="center-aligned" style={{ backgroundColor: MAIN_BLUE }}>
-                    <Appbar.BackAction onPress={() => navigation.goBack()} color={WHITE} size={25} />
-                    <Appbar.Content title={item?.title} color={WHITE} />
+                    <Appbar.BackAction
+                        onPress={() => navigation.goBack()}
+                        color={WHITE} size={25} />
+                    <Appbar.Content title={Type_of_expense()} color={WHITE} />
                 </Appbar.Header>
                 <KeyboardAwareScrollView
                     contentContainerStyle={{ flexGrow: 1 }}
@@ -253,7 +302,7 @@ const ExpenseTypes = ({ navigation, route }) => {
                             zIndex={4000}
                             zIndexInverse={1000}
                         />
-                        {item.title === 'Petty Expense' &&
+                        {item?.type_of_expence === '2' &&
                             <View style={[styles.row, { marginTop: scaleSize(23) }]}>
                                 <TouchableOpacity style={[{ width: 150 }]}
                                     activeOpacity={0.6}
@@ -298,8 +347,8 @@ const ExpenseTypes = ({ navigation, route }) => {
                                 />
                             </View>
                         }
-                        {item.title === 'Vehicle Extra Expense' ? null :
-                            item.title === 'GR Based Expense' || item.title === 'Prize For Routes' ?
+                        {item?.type_of_expence === '5' ? null :
+                            item?.type_of_expence === '1' || item?.type_of_expence === '4' ?
                                 <Input
                                     containerStyle={[styles.dropDown, { marginTop: scaleSize(23) }]}
                                     inputContainerStyle={[styles.input, { height: 50 }]}
@@ -308,10 +357,11 @@ const ExpenseTypes = ({ navigation, route }) => {
                                     labelStyle={[styles.label]}
                                     placeholder={'Enter GR'}
                                     onChangeText={(t) => setDeatils({ ...Details, GR: t })}
+                                    defaultValue={Details.GR}
                                 />
                                 :
                                 <>
-                                    <Text style={[styles.label, styles.text, { marginTop: item.title === 'Petty Expense' ? 0 : scaleSize(23) }]} >Source Station</Text>
+                                    <Text style={[styles.label, styles.text, { marginTop: item?.type_of_expence === '2' ? 0 : scaleSize(23) }]} >Source Station</Text>
                                     <CustomDropDown
                                         value={Source_value}
                                         setValue={setSource_Value}
@@ -334,7 +384,7 @@ const ExpenseTypes = ({ navigation, route }) => {
                                 </>
                         }
                         <Input
-                            containerStyle={[styles.dropDown, { marginTop: item.title === 'GR Based Expense' || item.title === 'Prize For Routes' ? 0 : scaleSize(25) }]}
+                            containerStyle={[styles.dropDown, { marginTop: item?.type_of_expence === '1' || item?.type_of_expence === '4' ? 0 : scaleSize(25) }]}
                             inputContainerStyle={[styles.input, { height: 50 }]}
                             textStyle={{ fontSize: 17, }}
                             label={'Amount Paid (In Rs.)'}
@@ -342,6 +392,7 @@ const ExpenseTypes = ({ navigation, route }) => {
                             placeholder={'0'}
                             keyboardType='number-pad'
                             onChangeText={(t) => setDeatils({ ...Details, Amount: t })}
+                            defaultValue={Number(Details?.Amount)?.toFixed(0)}
                         />
                         <Input
                             containerStyle={[styles.dropDown]}
@@ -352,6 +403,7 @@ const ExpenseTypes = ({ navigation, route }) => {
                             placeholder={'Card Number'}
                             keyboardType='number-pad'
                             onChangeText={(t) => setDeatils({ ...Details, CardNum: t })}
+                            defaultValue={Details.CardNum}
                         />
                         <Text style={[styles.label, styles.text, {}]} >Payment Mode</Text>
                         <CustomDropDown
@@ -395,6 +447,7 @@ const ExpenseTypes = ({ navigation, route }) => {
                             placeholder='Write notes here..'
                             numberOfLines={10}
                             onChangeText={(t) => setDeatils({ ...Details, Notes: t })}
+                            defaultValue={Details.Notes}
                         />
                         <Button
                             title={'Save'}
@@ -408,5 +461,5 @@ const ExpenseTypes = ({ navigation, route }) => {
     )
 }
 
-export default ExpenseTypes
+export default Edit_Expense
 

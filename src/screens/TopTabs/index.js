@@ -11,27 +11,48 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { GET_EXPENSE_DETAIL } from '../../redux/actions/users.actions';
 import Loader from '../../components/Loader';
+import { useIsFocused } from '@react-navigation/native';
 
 
 const TopTabs = ({ navigation }) => {
     const dispatch = useDispatch()
     const { isRequesting } = useSelector((state) => state?.users)
     const Tab = createMaterialTopTabNavigator();
+    const isFocused = useIsFocused();
     const [ShowMenu, setShowMenu] = useState(false)
     const [Happay, setHappay] = useState()
     const [Bpc, setBpc] = useState()
     const [Fastag, setFastag] = useState()
+    // const [Main_data, setMain_data] = useState([])
 
 
     useEffect(() => {
         Get_Expense()
     }, [])
 
+    // useEffect(()=>{
+    //     console.log(Main_data, 'main data')
+    // },[Main_data])
+
+    // useEffect(() => {
+    //     // console.log(Happay, Bpc, Fastag, 'state data')
+    // }, [Happay, Bpc, Fastag])
+
+
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            Get_Expense()
+        });
+        return unsubscribe;
+    }, [navigation]);
+
+
     const Get_Expense = async () => {
         const res = await AsyncStorage.getItem('user_detail')
         const user_Detail = JSON.parse(res)
         await dispatch(GET_EXPENSE_DETAIL(user_Detail[0]?.id)).then(async i => {
-
+            //  setMain_data(i.payload.data.data)
             const happay = await i.payload.data.data.filter(i => {
                 return i.payment_mode_title === 'Happay'
             })
@@ -112,7 +133,7 @@ const TopTabs = ({ navigation }) => {
                                     tabBarLabel: 'HAPPAY',
                                 }}
                             >
-                                {props => <Component {...props} data={Happay} />}
+                                {props => <Component {...props} data={Happay} Get_Expense={Get_Expense} />}
                             </Tab.Screen>
                             <Tab.Screen
                                 name="BPC"
@@ -121,7 +142,7 @@ const TopTabs = ({ navigation }) => {
 
                                 }}
                             >
-                                {props => <Component {...props} data={Bpc} />}
+                                {props => <Component {...props} data={Bpc} Get_Expense={Get_Expense} />}
                             </Tab.Screen>
                             <Tab.Screen
                                 name="FASTAG TOLL"
@@ -129,7 +150,7 @@ const TopTabs = ({ navigation }) => {
                                     tabBarLabel: 'FASTAG TOLL',
                                 }}
                             >
-                                {props => <Component {...props} data={Fastag} />}
+                                {props => <Component {...props} data={Fastag} Get_Expense={Get_Expense} />}
                             </Tab.Screen>
                         </Tab.Navigator>
                     }

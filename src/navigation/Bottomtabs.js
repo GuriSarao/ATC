@@ -3,10 +3,11 @@ import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import GR_Table from '../screens/GRTable';
 import Notifications from '../screens/Notification';
-import {LIGHT_GRAY_80, MAIN_BLUE} from '../theme';
+import { LIGHT_GRAY_80, MAIN_BLUE } from '../theme';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import DashboardStack from './Dashboard';
 import TopTabs from '../screens/TopTabs';
+import HomeStack from './HomeStack';
 
 const Bottomtabs = () => {
     const Tab = createBottomTabNavigator();
@@ -23,7 +24,7 @@ const Bottomtabs = () => {
 
                 }}>
                 <Tab.Screen name="Home"
-                    component={TopTabs}
+                    component={HomeStack}
                     options={{
                         tabBarIcon: ({ color, size, focused }) => (
                             <Ionicons name='home' color={color} size={size} />

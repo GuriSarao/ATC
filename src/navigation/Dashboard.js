@@ -16,6 +16,7 @@ const DashboardStack = ({ route }) => {
                     headerShown: false,
                 }}
                 initialRouteName='ExpenseList'
+            // initialRouteName='GRBasedExpense'
             >
                 <Stack.Screen
                     name="ExpenseList"
